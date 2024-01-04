@@ -14,7 +14,9 @@ e.use("/user", userRoutes);
 e.use("/task", taskroutes);
 
 e.get("/", (req, res) => {
-  res.send("Chiro Splinter API");
+  res.send(
+    "Chiro Splinter API. Deze API is bedoeld om taken die je na een zondag nog moet doen bijj te houden en te bekijken"
+  );
 });
 e.listen(port, () => {
   console.log(`Server running on port 3000`);
