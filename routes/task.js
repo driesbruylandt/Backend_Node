@@ -22,7 +22,12 @@ router.post("/create", auth, async (req, res) => {
 
 router.get("/showTasks", auth, async (req, res) => {
   try {
-    const tasks = await Task.find({ user: req.user._id });
+    const completed = req.query.completed;
+    let query = { user: req.user._id };
+    if (completed !== undefined) {
+      query.completed = completed.toLowerCase() === "true";
+    }
+    const tasks = await Task.find(query);
     res.status(200).json({ tasks, message: "Tasks found" });
   } catch (error) {
     res.status(500).json({ message: error.message });

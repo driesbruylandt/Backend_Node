@@ -3,6 +3,7 @@ const User = require("../Models/User");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const auth = require("../middleware/auth");
 
 router.get("/", (req, res) => {
   res.send("User route");
@@ -39,4 +40,27 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.get("/showUsers", async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = parseInt(req.query.offset) || 0;
+
+    const users = await User.find().limit(limit).skip(offset);
+    res.status(200).json({ users, message: "Users found" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.delete("/delete", auth, async (req, res) => {
+  try {
+    const user = await User.findOneAndDelete({ _id: req.user._id });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({ user, message: "User deleted" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 module.exports = router;
