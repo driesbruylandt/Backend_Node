@@ -63,4 +63,22 @@ router.delete("/delete", auth, async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+router.put("/update", auth, async (req, res) => {
+  try {
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ["name", "email", "password"];
+    const isValidOperation = updates.every((update) =>
+      allowedUpdates.includes(update)
+    );
+    if (!isValidOperation) {
+      return res.status(400).json({ message: "Invalid update" });
+    }
+    updates.forEach((update) => (req.user[update] = req.body[update]));
+    await req.user.save();
+    res.json({ user: req.user, message: "User updated" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 module.exports = router;
